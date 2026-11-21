@@ -516,7 +516,6 @@
         .volume-controls { width: 27%; display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
         input[type="range"] { accent-color: var(--accent-hover); cursor: pointer; }
 
-        /* Banner Connessione Google Drive ben visibile */
         .drive-connect-banner {
             display: flex;
             justify-content: space-between;
@@ -538,93 +537,30 @@
 
         /* Adattamento Smartphone */
         @media (max-width: 768px) {
-            body {
-                padding-bottom: 146px;
-            }
-            .app-body {
-                flex-direction: column;
-                padding: 6px;
-                gap: 8px;
-                padding-bottom: 12px;
-            }
-            .sidebar {
-                width: 100%;
-                padding: 12px;
-            }
-            .playlist-list {
-                max-height: 110px;
-            }
-            .main-view {
-                width: 100%;
-                padding: 14px;
-            }
-            .album-watermark-bg,
-            .album-watermark-overlay {
-                left: 6px;
-                right: 6px;
-                bottom: 144px;
-            }
-            .search-box {
-                width: 100%;
-            }
-            .grid-container {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-                gap: 12px;
-            }
-            .detail-header {
-                align-items: center;
-                text-align: center;
-                justify-content: center;
-            }
-            .detail-cover {
-                width: 130px;
-                height: 130px;
-            }
-            .track-table td {
-                padding: 8px 6px;
-                font-size: 0.84rem;
-            }
-            .inline-freq-canvas {
-                width: 54px;
-                height: 18px;
-            }
-            .queue-drawer {
-                top: 6px;
-                right: 6px;
-                bottom: 144px;
-                width: calc(100vw - 12px);
-                max-width: none;
-            }
-            .player-bar {
-                height: auto;
-                min-height: 128px;
-                flex-direction: column;
-                gap: 8px;
-                padding: 10px 12px;
-            }
-            .now-playing,
-            .player-center,
-            .volume-controls {
-                width: 100%;
-            }
-            .controls-btns {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 6px;
-            }
-            .ctrl-btn {
-                min-width: 34px;
-                height: 32px;
-                padding: 0 8px;
-                font-size: 0.84rem;
-            }
-            .volume-controls {
-                justify-content: center;
-            }
+            body { padding-bottom: 146px; }
+            .app-body { flex-direction: column; padding: 6px; gap: 8px; padding-bottom: 12px; }
+            .sidebar { width: 100%; padding: 12px; }
+            .playlist-list { max-height: 110px; }
+            .main-view { width: 100%; padding: 14px; }
+            .album-watermark-bg, .album-watermark-overlay { left: 6px; right: 6px; bottom: 144px; }
+            .search-box { width: 100%; }
+            .grid-container { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+            .detail-header { align-items: center; text-align: center; justify-content: center; }
+            .detail-cover { width: 130px; height: 130px; }
+            .track-table td { padding: 8px 6px; font-size: 0.84rem; }
+            .inline-freq-canvas { width: 54px; height: 18px; }
+            .queue-drawer { top: 6px; right: 6px; bottom: 144px; width: calc(100vw - 12px); max-width: none; }
+            .player-bar { height: auto; min-height: 128px; flex-direction: column; gap: 8px; padding: 10px 12px; }
+            .now-playing, .player-center, .volume-controls { width: 100%; }
+            .controls-btns { flex-wrap: wrap; justify-content: center; gap: 6px; }
+            .ctrl-btn { min-width: 34px; height: 32px; padding: 0 8px; font-size: 0.84rem; }
+            .volume-controls { justify-content: center; }
         }
     </style>
 </head>
 <body>
+
+    <audio id="main-audio-player" preload="auto" playsinline></audio>
 
     <div class="app-body">
         <!-- Sidebar -->
@@ -645,7 +581,7 @@
             </div>
 
             <div style="margin-bottom: 12px;">
-                <button class="btn-primary" id="sidebar-drive-btn" style="width: 100%;" onclick="handleAuthClick()">☁ Connetti Google Drive</button>
+                <button class="btn-primary" id="sidebar-drive-btn" style="width: 100%;" onclick="handleAuthClick(true)">☁ Connetti Google Drive</button>
             </div>
 
             <div class="nav-item active" id="nav-albums" onclick="switchView('albums')">
@@ -679,7 +615,7 @@
             </div>
             <div class="playlist-list" id="sidebar-playlists"></div>
 
-            <!-- Sleep Timer con dissolvenza -->
+            <!-- Sleep Timer -->
             <div class="side-widget-box">
                 <div class="side-widget-title">
                     <span>⏲ Sleep Timer</span>
@@ -709,7 +645,7 @@
             </div>
         </aside>
 
-        <!-- Area Principale con filigrana album e palette dinamica -->
+        <!-- Area Principale -->
         <main class="main-view" id="main-view">
             <div class="album-watermark-bg" id="album-watermark-bg"></div>
             <div class="album-watermark-overlay"></div>
@@ -717,10 +653,10 @@
             <div class="main-content-layer">
                 <div class="drive-connect-banner" id="drive-connect-banner">
                     <div>
-                        <div style="font-weight:700; color:var(--accent-hover); font-size:0.95rem;">Account Google Drive non connesso</div>
-                        <div style="font-size:0.8rem; color:var(--text-subdued);">Connetti il tuo account per leggere la cartella <strong>MUSICA</strong> e sincronizzare le playlist.</div>
+                        <div style="font-weight:700; color:var(--accent-hover); font-size:0.95rem;">Connessione a Google Drive</div>
+                        <div style="font-size:0.8rem; color:var(--text-subdued);">Connetti il tuo account per leggere la cartella <strong>MUSICA</strong> e ascoltare i brani.</div>
                     </div>
-                    <button class="btn-primary" onclick="handleAuthClick()">Connetti Google Drive</button>
+                    <button class="btn-primary" onclick="handleAuthClick(true)">Connetti Google Drive</button>
                 </div>
 
                 <div class="top-bar">
@@ -734,7 +670,6 @@
 
                 <div id="status-msg" style="color: var(--text-subdued); margin-bottom: 12px; font-size: 0.88rem;"></div>
 
-                <!-- Suggerimenti in tempo reale dalla libreria -->
                 <div class="similar-strip" id="similar-strip">
                     <div class="similar-strip-header">
                         <span style="font-size:0.86rem; font-weight:700; color:var(--accent-hover);" id="similar-strip-title">✨ Simili a quello che suona</span>
@@ -802,7 +737,7 @@
     </div>
 
     <script>
-        const CLIENT_ID = '944286670464-v1jlvdvo2pik0t5jjvm89k3c1od3nh0f.apps.googleusercontent.com';
+        const CLIENT_ID = 'INSERISCI_QUI_IL_TUO_CLIENT_ID.apps.googleusercontent.com';
         const SCOPES = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly';
         const ROOT_MUSIC_FOLDER_NAME = 'MUSICA';
         const PLAYLISTS_FILE_NAME = 'audpik_playlists.json';
@@ -811,8 +746,10 @@
 
         let tokenClient;
         let accessToken = null;
+        let tokenExpiresAt = 0;
         let musicRootId = null;
         let playlistsDriveFileId = null;
+        let pendingActionAfterAuth = null;
 
         let allTracks = [];
         let albumsMap = {};
@@ -834,15 +771,49 @@
         let currentBlobUrl = null;
         let userVolume = 0.85;
 
+        // Pre-caricamento brano successivo per continuità a schermo bloccato su smartphone
+        let preloadedNext = { trackId: null, blobUrl: null, inProgress: false };
+        let wakeLockSentinel = null;
+
         let sleepEndTime = null;
         let sleepInterval = null;
 
-        const audio = new Audio();
+        const audio = document.getElementById('main-audio-player');
         audio.volume = userVolume;
         let audioCtx = null;
         let analyser = null;
         let freqData = null;
         let visualizerStarted = false;
+
+        // ==========================================
+        // GESTIONE TOKEN PERSISTENTE & RINNOVO AUTOMATICO
+        // ==========================================
+        function saveTokenToStorage(token, expiresInSec) {
+            accessToken = token;
+            tokenExpiresAt = Date.now() + Math.max(60, (expiresInSec || 3500) - 120) * 1000;
+            localStorage.setItem('audpik_token', accessToken);
+            localStorage.setItem('audpik_token_exp', String(tokenExpiresAt));
+            setDriveConnectedUI(true);
+        }
+
+        function loadStoredToken() {
+            const savedToken = localStorage.getItem('audpik_token');
+            const savedExp = Number(localStorage.getItem('audpik_token_exp') || '0');
+            if (savedToken && savedExp > Date.now()) {
+                accessToken = savedToken;
+                tokenExpiresAt = savedExp;
+                setDriveConnectedUI(true);
+                return true;
+            }
+            accessToken = null;
+            tokenExpiresAt = 0;
+            setDriveConnectedUI(false);
+            return false;
+        }
+
+        function isTokenValid() {
+            return Boolean(accessToken && tokenExpiresAt > Date.now());
+        }
 
         function setDriveConnectedUI(connected) {
             const banner = document.getElementById('drive-connect-banner');
@@ -853,6 +824,22 @@
             } else {
                 banner.style.display = 'flex';
                 sideBtn.innerText = '☁ Connetti Google Drive';
+            }
+        }
+
+        async function requestWakeLock() {
+            if ('wakeLock' in navigator && !wakeLockSentinel) {
+                try {
+                    wakeLockSentinel = await navigator.wakeLock.request('screen');
+                    wakeLockSentinel.addEventListener('release', () => { wakeLockSentinel = null; });
+                } catch (e) {}
+            }
+        }
+
+        function releaseWakeLock() {
+            if (wakeLockSentinel) {
+                try { wakeLockSentinel.release(); } catch (e) {}
+                wakeLockSentinel = null;
             }
         }
 
@@ -1209,18 +1196,19 @@
                 scope: SCOPES,
                 callback: async (tokenResponse) => {
                     if (tokenResponse && tokenResponse.access_token) {
-                        accessToken = tokenResponse.access_token;
-                        setDriveConnectedUI(true);
+                        saveTokenToStorage(tokenResponse.access_token, tokenResponse.expires_in);
 
-                        const cachedTracks = await loadLibraryFromCache();
-                        if (cachedTracks && cachedTracks.length > 0) {
-                            buildMapsFromTracks(cachedTracks);
-                            document.getElementById('status-msg').innerText =
-                                `Caricati ${allTracks.length} brani dalla cache locale. Usa "↻ Risincronizza Drive" per aggiornare.`;
-                            switchView(currentView);
-                            syncPlaylistsFromDrive();
-                        } else {
+                        if (pendingActionAfterAuth) {
+                            const fn = pendingActionAfterAuth;
+                            pendingActionAfterAuth = null;
+                            await fn();
+                            return;
+                        }
+
+                        if (allTracks.length === 0) {
                             await scanDriveMusic(false);
+                        } else {
+                            syncPlaylistsFromDrive();
                         }
                     }
                 },
@@ -1240,24 +1228,46 @@
             renderPlaylistsSidebar();
             updateCounts();
             refreshAudioOutputs();
-            initGoogleTokenClient();
 
+            const hasValidToken = loadStoredToken();
             const cachedTracks = await loadLibraryFromCache();
             if (cachedTracks && cachedTracks.length > 0) {
                 buildMapsFromTracks(cachedTracks);
-                document.getElementById('status-msg').innerText =
-                    `Libreria in cache (${allTracks.length} brani). Tocca "Connetti Google Drive" per ascoltare o risincronizzare.`;
+                document.getElementById('status-msg').innerText = hasValidToken
+                    ? `Pronti ${allTracks.length} brani dalla cache locale.`
+                    : `Libreria in cache (${allTracks.length} brani). Riconnessione automatica in corso...`;
                 switchView(currentView);
             }
+
+            // Attende il caricamento dello script Google GSI e tenta rinnovo silenzioso se necessario
+            let attempts = 0;
+            const gsiWait = setInterval(async () => {
+                attempts++;
+                if (initGoogleTokenClient()) {
+                    clearInterval(gsiWait);
+                    if (hasValidToken) {
+                        if (allTracks.length === 0) await scanDriveMusic(false);
+                        else syncPlaylistsFromDrive();
+                    } else {
+                        // Tenta riconnessione silenziosa senza aprire finestre se già loggato su Google
+                        try {
+                            tokenClient.requestAccessToken({ prompt: '' });
+                        } catch (e) {}
+                    }
+                } else if (attempts > 25) {
+                    clearInterval(gsiWait);
+                }
+            }, 200);
         };
 
-        function handleAuthClick() {
+        function handleAuthClick(forceConsent = false, callbackAfter = null) {
+            if (callbackAfter) pendingActionAfterAuth = callbackAfter;
             if (!initGoogleTokenClient()) {
                 document.getElementById('status-msg').innerText =
                     "Servizio di accesso Google in caricamento, riprova tra un secondo.";
                 return;
             }
-            tokenClient.requestAccessToken({ prompt: accessToken ? '' : 'consent' });
+            tokenClient.requestAccessToken({ prompt: forceConsent ? 'consent' : '' });
         }
 
         function updateCounts() {
@@ -1333,6 +1343,10 @@
                 let url = `https://www.googleapis.com/drive/v3/files?q=${encodedQ}&pageSize=1000&fields=${encodeURIComponent('nextPageToken, ' + fields)}`;
                 if (pageToken) url += `&pageToken=${encodeURIComponent(pageToken)}`;
                 const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
+                if (res.status === 401) {
+                    setDriveConnectedUI(false);
+                    throw new Error('TOKEN_EXPIRED');
+                }
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
                 if (data.files) results = results.concat(data.files);
@@ -1342,8 +1356,8 @@
         }
 
         async function scanDriveMusic(forceFresh = true) {
-            if (!accessToken) {
-                handleAuthClick();
+            if (!isTokenValid()) {
+                handleAuthClick(false, () => scanDriveMusic(forceFresh));
                 return;
             }
             const status = document.getElementById('status-msg');
@@ -1437,7 +1451,11 @@
 
             } catch (err) {
                 console.error(err);
-                status.innerText = "Errore durante la lettura della cartella MUSICA su Google Drive.";
+                if (err.message === 'TOKEN_EXPIRED') {
+                    handleAuthClick(false, () => scanDriveMusic(forceFresh));
+                } else {
+                    status.innerText = "Errore durante la lettura della cartella MUSICA su Google Drive.";
+                }
             }
         }
 
@@ -1501,7 +1519,7 @@
         }
 
         async function syncPlaylistsFromDrive() {
-            if (!accessToken) return;
+            if (!isTokenValid()) return;
             try {
                 const found = await fetchAllDrivePages(
                     `name = '${PLAYLISTS_FILE_NAME}' and trashed = false`,
@@ -1529,7 +1547,7 @@
         async function savePlaylistsToDrive() {
             localStorage.setItem('audpik_playlists', JSON.stringify(playlists));
             renderPlaylistsSidebar();
-            if (!accessToken) return;
+            if (!isTokenValid()) return;
 
             try {
                 const jsonContent = JSON.stringify(playlists, null, 2);
@@ -1568,7 +1586,7 @@
         }
 
         async function extractMissingID3Covers() {
-            if (coverExtractionRunning || !accessToken) return;
+            if (coverExtractionRunning || !isTokenValid()) return;
             coverExtractionRunning = true;
             let updatedAny = false;
 
@@ -1946,6 +1964,51 @@
             return baseQueue[playOrder[currentPos]] || null;
         }
 
+        function getNextTrackObject() {
+            if (!playOrder.length) return null;
+            if (currentPos + 1 < playOrder.length) {
+                return baseQueue[playOrder[currentPos + 1]] || null;
+            }
+            if (repeatMode === 1) {
+                return baseQueue[playOrder[0]] || null;
+            }
+            return null;
+        }
+
+        function clearPreloadedNext() {
+            if (preloadedNext.blobUrl) {
+                URL.revokeObjectURL(preloadedNext.blobUrl);
+            }
+            preloadedNext = { trackId: null, blobUrl: null, inProgress: false };
+        }
+
+        // Scarica in anticipo la traccia successiva mentre suona quella attuale
+        async function preloadNextTrackBlob() {
+            const nextTr = getNextTrackObject();
+            if (!nextTr || !isTokenValid()) return;
+            if (preloadedNext.trackId === nextTr.id || preloadedNext.inProgress) return;
+
+            clearPreloadedNext();
+            preloadedNext.trackId = nextTr.id;
+            preloadedNext.inProgress = true;
+
+            try {
+                const res = await fetch(`https://www.googleapis.com/drive/v3/files/${nextTr.id}?alt=media`, {
+                    headers: { Authorization: `Bearer ${accessToken}` }
+                });
+                if (res.ok) {
+                    const blob = await res.blob();
+                    if (preloadedNext.trackId === nextTr.id) {
+                        preloadedNext.blobUrl = URL.createObjectURL(blob);
+                    }
+                }
+            } catch (e) {
+                preloadedNext.trackId = null;
+            } finally {
+                preloadedNext.inProgress = false;
+            }
+        }
+
         function rebuildPlayOrder(keepCurrentTrack = true) {
             const currentTrack = keepCurrentTrack ? getCurrentPlayingTrack() : null;
             const indices = baseQueue.map((_, i) => i);
@@ -1969,10 +2032,12 @@
                 if (currentTrack) {
                     currentPos = baseQueue.findIndex(t => t.id === currentTrack.id);
                 }
+                clearPreloadedNext();
                 renderQueueDrawer();
                 return;
             }
             playOrder = indices;
+            clearPreloadedNext();
             renderQueueDrawer();
         }
 
@@ -2048,10 +2113,11 @@
 
         async function startQueue(tracks, index) {
             if (!tracks || !tracks.length) return;
-            if (!accessToken) {
-                handleAuthClick();
+            if (!isTokenValid()) {
+                handleAuthClick(false, () => startQueue(tracks, index));
                 return;
             }
+            clearPreloadedNext();
             baseQueue = tracks.slice();
             playOrder = baseQueue.map((_, i) => i);
             currentPos = Math.max(0, Math.min(index, baseQueue.length - 1));
@@ -2090,9 +2156,34 @@
 
             try {
                 initAudioVisualizer();
+                requestWakeLock();
+
+                // Se il brano successivo era già stato pre-caricato in memoria, usalo istantaneamente!
+                if (preloadedNext.trackId === track.id && preloadedNext.blobUrl) {
+                    if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
+                    currentBlobUrl = preloadedNext.blobUrl;
+                    preloadedNext = { trackId: null, blobUrl: null, inProgress: false };
+
+                    audio.src = currentBlobUrl;
+                    await audio.play();
+                    document.getElementById('btn-play-pause').innerText = "⏸";
+                    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
+                    return;
+                }
+
+                if (!isTokenValid()) {
+                    handleAuthClick(false, () => playCurrentTrack());
+                    return;
+                }
+
                 const res = await fetch(`https://www.googleapis.com/drive/v3/files/${track.id}?alt=media`, {
                     headers: { Authorization: `Bearer ${accessToken}` }
                 });
+                if (res.status === 401) {
+                    setDriveConnectedUI(false);
+                    handleAuthClick(false, () => playCurrentTrack());
+                    return;
+                }
                 const blob = await res.blob();
                 if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
                 currentBlobUrl = URL.createObjectURL(blob);
@@ -2100,6 +2191,7 @@
                 audio.src = currentBlobUrl;
                 await audio.play();
                 document.getElementById('btn-play-pause').innerText = "⏸";
+                if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
             } catch (err) {
                 console.error("Errore riproduzione:", err);
                 document.getElementById('btn-play-pause').innerText = "▶";
@@ -2111,10 +2203,14 @@
             initAudioVisualizer();
             if (audio.paused) {
                 audio.play();
+                requestWakeLock();
                 document.getElementById('btn-play-pause').innerText = "⏸";
+                if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing';
             } else {
                 audio.pause();
+                releaseWakeLock();
                 document.getElementById('btn-play-pause').innerText = "▶";
+                if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused';
             }
         }
 
@@ -2126,6 +2222,9 @@
             } else if (repeatMode === 1) {
                 currentPos = 0;
                 playCurrentTrack();
+            } else {
+                releaseWakeLock();
+                document.getElementById('btn-play-pause').innerText = "▶";
             }
         }
 
@@ -2157,6 +2256,11 @@
             document.getElementById('progress-fill').style.width = pct + '%';
             document.getElementById('time-current').innerText = formatTime(audio.currentTime);
             document.getElementById('time-total').innerText = formatTime(audio.duration);
+
+            // A partire dal 65% della canzone, pre-carica il file audio successivo in background
+            if (pct >= 65) {
+                preloadNextTrackBlob();
+            }
         });
 
         function seekAudio(e) {
